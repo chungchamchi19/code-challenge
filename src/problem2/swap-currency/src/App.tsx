@@ -5,17 +5,20 @@ import { useSubmit } from "./hooks/useSubmit";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useValidate } from "./hooks/useValidate";
+import { useState } from "react";
 
 function App() {
   const { currencies } = usePrices();
   const { sendAmount, sendCurrency, changeSendValue, receiveAmount, receiveCurrency, changeReceiveValue } = useConverter();
   const { loading, submit } = useSubmit();
   const { isValidSend, isValidReceive } = useValidate(sendAmount, receiveAmount);
+  const [isTyped, setIsTyped] = useState(false);
 
   const handleChangeSendAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const amount = parseFloat(value) || 0;
     changeSendValue({ amount, currency: sendCurrency });
+    !isTyped && setIsTyped(true);
   };
 
   const handleChangeSendCurrency = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -27,6 +30,7 @@ function App() {
     const value = e.target.value;
     const amount = parseFloat(value) || 0;
     changeReceiveValue({ amount, currency: receiveCurrency });
+    !isTyped && setIsTyped(true);
   };
 
   const handleChangeReceiveCurrency = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -64,7 +68,7 @@ function App() {
                 <select
                   name=""
                   id="send_amount_select"
-                  className="border-none absolute right-2 top-1/2 -translate-y-1/2 py-2"
+                  className="border-none absolute right-2 top-1/2 -translate-y-1/2 py-2 cursor-pointer"
                   value={sendCurrency}
                   onChange={handleChangeSendCurrency}
                 >
@@ -75,7 +79,7 @@ function App() {
                   ))}
                 </select>
               </div>
-              {!isValidSend && <p className="text-red-500 text-sm mt-1">Invalid send amount</p>}
+              {!isValidSend && isTyped && <p className="text-red-500 text-sm mt-1">Invalid send amount</p>}
             </div>
             <label htmlFor="send_amount" className="mb-2 block">
               Amount to receive
@@ -86,7 +90,7 @@ function App() {
                 <select
                   name=""
                   id="receive_amount_select"
-                  className="border-none absolute right-2 top-1/2 -translate-y-1/2 py-2"
+                  className="border-none absolute right-2 top-1/2 -translate-y-1/2 py-2 cursor-pointer"
                   value={receiveCurrency}
                   onChange={handleChangeReceiveCurrency}
                 >
@@ -97,7 +101,7 @@ function App() {
                   ))}
                 </select>
               </div>
-              {!isValidReceive && <p className="text-red-500 text-sm mt-1">Invalid receive amount</p>}
+              {!isValidReceive && isTyped && <p className="text-red-500 text-sm mt-1">Invalid receive amount</p>}
             </div>
             <button
               type="submit"
