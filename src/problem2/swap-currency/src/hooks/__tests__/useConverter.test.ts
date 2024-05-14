@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { useConverter } from "../useConverter";
+import { usePrices } from "../usePrices";
 
 describe("useConverter", () => {
   it("should calculate receive amount when change send amount", () => {
@@ -45,17 +46,28 @@ describe("useConverter", () => {
     });
     expect(Number(result.current.sendAmount.toFixed(2))).toBe(1.18);
   });
+
+  it("should auto select first and second currency", () => {
+    jest.mocked(usePrices).mockReturnValue({
+      pricesMap: {
+        USD: 1,
+        EUR: 1.18,
+      },
+      currencies: ["EUR", "USD"],
+    });
+    const { result } = renderHook(() => useConverter());
+    expect(result.current.sendCurrency).toBe("EUR");
+    expect(result.current.receiveCurrency).toBe("USD");
+  });
 });
 
 jest.mock("../usePrices", () => {
   return {
-    usePrices: () => {
-      return {
-        pricesMap: {
-          USD: 1,
-          EUR: 1.18,
-        },
-      };
-    },
+    usePrices: jest.fn().mockReturnValue({
+      pricesMap: {
+        USD: 1,
+        EUR: 1.18,
+      },
+    }),
   };
 });

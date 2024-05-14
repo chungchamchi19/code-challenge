@@ -19,7 +19,13 @@ yarn dev
 ### Run test
 
 ```
-yarn test
+yarn test --watch
+```
+
+### Run test coverage
+
+```
+yarn test --coverage
 ```
 
 ### Build
